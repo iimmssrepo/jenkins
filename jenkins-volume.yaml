@@ -3,8 +3,10 @@ kind: PersistentVolume
 metadata:
   name: jenkins-pv
   namespace: jenkins
+  annotations:
+    pv.beta.kubernetes.io/gid: "1000"
 spec:
-  storageClassName: jenkins-pv
+  # storageClassName:
   accessModes:
   - ReadWriteOnce
   capacity:
@@ -12,3 +14,15 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /data/jenkins-volume/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+  namespace: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+     storage: 8Gi
