@@ -100,8 +100,8 @@ controller:
   # being deprecated and replaced by `podSecurityContextOverride`.
   # Set runAsUser to 1000 to let Jenkins run as non-root user 'jenkins' which exists in 'jenkins/jenkins' docker image.
   # When setting runAsUser to a different value than 0 also set fsGroup to the same value:
-  runAsUser: 1000
-  fsGroup: 1000
+  runAsUser: 0
+  fsGroup: 0
   # If you have PodSecurityPolicies that require dropping of capabilities as suggested by CIS K8s benchmark, put them here
   securityContextCapabilities: {}
   #  drop:
@@ -118,9 +118,9 @@ controller:
   #   # capabilities: {}
   # Container securityContext
   containerSecurityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    readOnlyRootFilesystem: true
+    runAsUser: 0
+    runAsGroup: 0
+    readOnlyRootFilesystem: false
     allowPrivilegeEscalation: false
   servicePort: 8080
   targetPort: 8080
@@ -258,7 +258,7 @@ controller:
   initializeOnce: true
 
   # Enable to always override the installed plugins with the values of 'controller.installPlugins' on upgrade or redeployment.
-  # overwritePlugins: true
+  overwritePlugins: false
 
   # Configures if plugins bundled with `controller.image` should be overwritten with the values of 'controller.installPlugins' on upgrade or redeployment.
   overwritePluginsFromImage: true
@@ -886,8 +886,8 @@ backup:
   # Enable backup pod security context (must be `true` if runAsUser or fsGroup are set)
   usePodSecurityContext: true
   # When setting runAsUser to a different value than 0 also set fsGroup to the same value:
-  runAsUser: 1000
-  fsGroup: 1000
+  runAsUser: 0
+  fsGroup: 0
   securityContextCapabilities: {}
   #  drop:
   #    - NET_RAW
