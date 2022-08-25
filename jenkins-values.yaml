@@ -100,8 +100,8 @@ controller:
   # being deprecated and replaced by `podSecurityContextOverride`.
   # Set runAsUser to 1000 to let Jenkins run as non-root user 'jenkins' which exists in 'jenkins/jenkins' docker image.
   # When setting runAsUser to a different value than 0 also set fsGroup to the same value:
-  runAsUser: 0
-  fsGroup: 0
+  # runAsUser: 1000
+  # fsGroup: 1000
   # If you have PodSecurityPolicies that require dropping of capabilities as suggested by CIS K8s benchmark, put them here
   securityContextCapabilities: {}
   #  drop:
@@ -118,9 +118,9 @@ controller:
   #   # capabilities: {}
   # Container securityContext
   containerSecurityContext:
-    runAsUser: 0
-    runAsGroup: 0
-    readOnlyRootFilesystem: false
+    # runAsUser: 1000
+    # runAsGroup: 1000
+    readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
   servicePort: 8080
   targetPort: 8080
@@ -258,7 +258,7 @@ controller:
   initializeOnce: true
 
   # Enable to always override the installed plugins with the values of 'controller.installPlugins' on upgrade or redeployment.
-  overwritePlugins: false
+  # overwritePlugins: true
 
   # Configures if plugins bundled with `controller.image` should be overwritten with the values of 'controller.installPlugins' on upgrade or redeployment.
   overwritePluginsFromImage: true
@@ -321,7 +321,13 @@ controller:
     #  welcome-message: |
     #    jenkins:
     #      systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
-    # Ignored if securityRealm is defined in controller.JCasC.configScripts and
+    # Allows adding to the top-level security JCasC section. For legacy,  default the chart includes apiToken configurations
+    security:
+      apiToken:
+        creationOfLegacyTokenEnabled: false
+        tokenGenerationOnCreationEnabled: false
+        usageStatisticsEnabled: true
+    # Ignored if securityRealm is defined in controller.JCasC.configScripts
     securityRealm: |-
       local:
         allowsSignup: false
@@ -422,7 +428,7 @@ controller:
   updateStrategy: {}
 
   ingress:
-    enabled: true
+    enabled: false
     # Override for the default paths that map requests to the backend
     paths: []
     # - backend:
@@ -435,14 +441,14 @@ controller:
     #     servicePort: 8080
     # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
     # For Kubernetes v1.19+, use 'networking.k8s.io/v1'
-    apiVersion: "extensions/v1"
+    apiVersion: "extensions/v1beta1"
     labels: {}
     annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
     # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-    ingressClassName: nginx
+    # ingressClassName: nginx
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     # path: "/jenkins"
     # configures the hostname e.g. jenkins.example.com
@@ -766,7 +772,7 @@ persistence:
   ## A manually managed Persistent Volume and Claim
   ## Requires persistence.enabled: true
   ## If defined, PVC must be created manually before volume will be bound
-  existingClaim: jenkins-pvc
+  existingClaim:
   ## jenkins data Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -774,12 +780,14 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass:
+  storageClass: hostpath
   annotations: {}
   labels: {}
-  accessMode:
-  size:
+  accessMode: "ReadWriteOnce"
+  size: "8Gi"
   volumes:
+  #  - name: nothing
+  #    emptyDir: {}
   mounts:
   #  - mountPath: /var/nothing
   #    name: nothing
@@ -820,7 +828,7 @@ serviceAccountAgent:
   create: false
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: jenkins
+  name:
   annotations: {}
   imagePullSecretName:
 
@@ -886,8 +894,8 @@ backup:
   # Enable backup pod security context (must be `true` if runAsUser or fsGroup are set)
   usePodSecurityContext: true
   # When setting runAsUser to a different value than 0 also set fsGroup to the same value:
-  runAsUser: 0
-  fsGroup: 0
+  # runAsUser: 1000
+  # fsGroup: 1000
   securityContextCapabilities: {}
   #  drop:
   #    - NET_RAW
