@@ -3,12 +3,26 @@ kind: PersistentVolume
 metadata:
   name: jenkins-pv
   namespace: jenkins
+  labels:
+    type: local
 spec:
-  storageClassName: hostpath
-  accessModes:
-  - ReadWriteOnce
+  storageClassName: manual
   capacity:
-    storage: 8Gi
-  persistentVolumeReclaimPolicy: Retain
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
   hostPath:
-    path: /data/jenkins-volume/
+    path: "/home/ubuntu/jenkins/jenkins-volume"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+  namespace: jenkins
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
